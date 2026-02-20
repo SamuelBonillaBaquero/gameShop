@@ -31,15 +31,37 @@
             </h1>
         </div>
 
-        <div id="derecha" class="flex items-center gap-4">
-            <button class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all cursor-pointer">
+        @guest
+            <div id="derecha" class="flex items-center gap-4">
+            <a href="{{route('user.ViewiniciarSesion')}}">
+                <button class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all cursor-pointer">
                 Login
             </button>
+            </a>
             <button class="px-5 py-2 rounded-full font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                 Carrito
             </button>
         </div>
+        @endguest
+
+        @auth
+            @php
+                $user = Auth::user();
+            @endphp
+            <button class="px-5 py-2 rounded-full font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                Carrito
+            </button>
+            <button class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all cursor-pointer"><a href="">Mis Facturas</a></button>
+            <button>Bienvenido {{$user->name}}</button>
+            <form action="{{route('user.cerrarSesion')}}" method="POST">
+                @csrf
+                <input type="submit" value="Cerrar sesionNN">
+            </form>
+
+        @endauth
+
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-8">

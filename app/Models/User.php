@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'direccion',
         'password',
     ];
 
@@ -38,7 +39,7 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected function casts(): array // esto ya esta cifrado asi que sin problema
     {
         return [
             'email_verified_at' => 'datetime',

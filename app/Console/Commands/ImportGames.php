@@ -29,7 +29,7 @@ class ImportGames extends Command
     {
         $response = Http::get('https://api.rawg.io/api/games', [ //mando peticion a esta pagina con la mi API key
         'key' => config('services.rawg.key'), //mi api key para la peticion
-        'page_size' => 20 //limito a 20 que me quedo sin tokens
+        'page_size' => 30 //limito a 20 que me quedo sin tokens
     ]);
 
     $games = $response->json()['results']; //nececio transformar la peticion a json porque esto esta en crudo

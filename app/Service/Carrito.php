@@ -37,7 +37,7 @@ class Carrito implements IteratorAggregate {
 
 
             if($this->carrito[$i]->getId()==$id){
-                if($this->carrito[$i]->getAmount()-1 < 0){
+                if($this->carrito[$i]->getAmount()-1 < 0){ //si es menro que 0 lo elimino del carrito
                     $this->deleteItem($id);
                 } else {
                     $this->carrito[$i]->setAmount($this->carrito[$i]->getAmount()-1);

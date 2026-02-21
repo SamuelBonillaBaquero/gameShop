@@ -1,3 +1,7 @@
+@php
+    use App\service\Carrito;
+@endphp
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <title>GameShop | Expertos en Juegos</title>
     <style>
-        /* Gradientes personalizados y suavizado */
         .glass {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
@@ -18,6 +21,11 @@
             background: linear-gradient(to right, #a855f7, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+        /* Asegura que las imágenes mantengan su proporción sin deformarse */
+        .game-card-img {
+            aspect-ratio: 16/10;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -31,42 +39,48 @@
             </h1>
         </div>
 
-        @guest
-            <div id="derecha" class="flex items-center gap-4">
-            <a href="{{route('user.ViewiniciarSesion')}}">
-                <button class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all cursor-pointer">
-                Login
-            </button>
-            </a>
-            <button class="px-5 py-2 rounded-full font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                Carrito
-            </button>
+        @php
+            if(!session()->has('carrito')){
+                session()->put('carrito', new Carrito());
+            }
+        @endphp
+
+        <div id="derecha" class="flex items-center gap-4">
+            @guest
+                <a href="{{route('user.ViewiniciarSesion')}}">
+                    <button class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all cursor-pointer">
+                        Login
+                    </button>
+                </a>
+                <a href="{{route('carrito.view')}}">
+                    <button class="px-5 py-2 rounded-full font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                        Carrito
+                    </button>
+                </a>
+            @endguest
+
+            @auth
+                @php $user = Auth::user(); @endphp
+                <a href="{{route('carrito.view')}}">
+                    <button class="px-5 py-2 rounded-full font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                        Carrito
+                    </button>
+                </a>
+                <a href="#" class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all">Mis Facturas</a>
+                <span class="text-sm font-medium">Bienvenido, {{$user->name}}</span>
+                <form action="{{route('user.cerrarSesion')}}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="text-xs bg-red-500/10 text-red-400 px-3 py-1 rounded-lg hover:bg-red-500 hover:text-white transition-all">Salir</button>
+                </form>
+            @endauth
         </div>
-        @endguest
-
-        @auth
-            @php
-                $user = Auth::user();
-            @endphp
-            <button class="px-5 py-2 rounded-full font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-lg shadow-violet-500/20 transition-all flex items-center gap-2 cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                Carrito
-            </button>
-            <button class="px-5 py-2 rounded-full font-semibold border border-slate-700 hover:bg-slate-800 transition-all cursor-pointer"><a href="">Mis Facturas</a></button>
-            <button>Bienvenido {{$user->name}}</button>
-            <form action="{{route('user.cerrarSesion')}}" method="POST">
-                @csrf
-                <input type="submit" value="Cerrar sesionNN">
-            </form>
-
-        @endauth
-
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-8">
 
-        <!-- Hero Section / Empresa -->
+        <!-- Hero Section -->
         <section id="infoEmpresa" class="relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 mb-12">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="w-full md:w-1/2 p-10 z-10">
@@ -75,7 +89,7 @@
                     <div class="space-y-2 text-slate-400">
                         <p class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="text-violet-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                            Calle Francisco Franco 12
+                            Calle Francisco Gomez 12
                         </p>
                         <p class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="text-cyan-500" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -83,10 +97,9 @@
                         </p>
                     </div>
                 </div>
-                <div class="w-full md:w-1/2 h-64 md:h-96 overflow-hidden">
-                    <!-- Imagen con overlay para que no distraiga del texto -->
-                    <div class="absolute inset-0 bg-linear-to-r from-slate-900 via-transparent to-transparent z-5 shadow-inner"></div>
-                    <img src="{{asset('images/layaout.png')}}" alt="Reserva ya" class="w-full h-full object-cover opacity-60 hover:scale-105 transition-transform duration-700">
+                <div class="w-full md:w-1/2 h-64 md:h-96 relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-transparent to-transparent z-10"></div>
+                    <img src="{{asset('images/layaout.png')}}" alt="Reserva ya" class="w-full h-full object-cover opacity-60">
                 </div>
             </div>
         </section>
@@ -103,34 +116,49 @@
         <!-- Grid de Juegos -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             @foreach ($juegos as $game)
-                <a href="{{route('game.show',$game->id)}}">
-                    <div class="group bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/10 transition-all flex flex-col">
+                <div class="group bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/10 transition-all flex flex-col h-full">
+
                     <!-- Imagen del Juego -->
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{$game->image}}" alt="Imagen de {{$game->name}}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <a href="{{route('game.show',$game->id)}}" class="relative block overflow-hidden">
+                        <img src="{{$game->image}}" alt="Imagen de {{$game->name}}" class="w-full game-card-img group-hover:scale-110 transition-transform duration-500">
                         <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur px-2 py-1 rounded-lg flex items-center gap-1 border border-white/10">
                             <span class="text-yellow-400 text-sm">★</span>
                             <span class="text-xs font-bold">{{$game->valoration}}</span>
                         </div>
-                    </div>
+                    </a>
 
-                    <!-- Contenido -->
-                    <div class="p-6 flex flex-col grow">
-                        <h2 class="text-xl font-bold mb-2 group-hover:text-violet-400 transition-colors leading-tight">{{$game->name}}</h2>
-                        <p class="text-slate-400 text-sm line-clamp-2 mb-4 grow">{{$game->description}}</p>
+                    <!-- Contenido de la Tarjeta -->
+                    <div class="p-6 flex flex-col flex-grow">
+                        <!-- Título -->
+                        <a href="{{route('game.show',$game->id)}}" class="block mb-2">
+                            <h2 class="text-xl font-bold group-hover:text-violet-400 transition-colors leading-tight line-clamp-1">
+                                {{$game->name}}
+                            </h2>
+                        </a>
 
-                        <div class="flex justify-between items-end mt-auto">
+                        <!-- Descripción con truncado para mantener simetría -->
+                        <p class="text-slate-400 text-sm line-clamp-3 mb-6 flex-grow">
+                            {{$game->description}}
+                        </p>
+
+                        <!-- Footer de la tarjeta: Precio y Botón -->
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-800/50 mt-auto">
                             <div>
-                                <p class="text-xs text-slate-500 uppercase font-bold tracking-tighter">Stock: {{$game->stock}}</p>
-                                <p class="text-2xl font-black text-white mt-1">{{$game->price}}€</p>
+                                <p class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Stock: {{$game->stock}}</p>
+                                <p class="text-2xl font-black text-white italic tracking-tighter">{{$game->price}}€</p>
                             </div>
-                            <button class="bg-slate-800 p-3 rounded-xl hover:bg-violet-600 transition-colors group/btn cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 group-hover/btn:text-white"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                            </button>
+
+                            <form action="{{route('carrito.add',$game->id)}}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="bg-slate-800 p-4 rounded-2xl hover:bg-violet-600 transition-all group/btn cursor-pointer hover:scale-110 active:scale-95 shadow-lg flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400 group-hover/btn:text-white">
+                                        <path d="M5 12h14"/><path d="M12 5v14"/>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
-                </a>
             @endforeach
         </div>
 
